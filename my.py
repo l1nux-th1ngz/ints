@@ -1,5 +1,7 @@
 import subprocess
 import os
+import tkinter as tk
+from tkinter import filedialog
 
 def run_archinstall():
     archinstall_cmd = [
@@ -83,13 +85,23 @@ def install_with_chosen_installer(installer):
         for i in installer.split():
             subprocess.run([i, '-S', '--noconfirm'], check=True)
 
-def install_additional_programs():
+def install_additional_programs(installer):
     with open('bldlist.txt', 'r') as file:
         package_list = file.read().splitlines()
     package_list = list(set(package_list))
     for package in package_list:
         subprocess.run([installer, '-S', '--noconfirm', package], check=True)
 
+def choose_file():
+    root = tk.Tk()
+    root.withdraw()
+    file_path = filedialog.askopenfilename()
+    return file_path
+
 def apply_custom_configurations():
-    subprocess.run(['cp', 'your_custom.css', '~/.config/waybar/your_custom.css'])
-    subprocess.run(['cp', 'your_custom.jsonc', '~/.config/waybar/your_custom.jsonc'])
+    source_file_path_css = choose_file()
+    destination_file_path_css = os.path.expanduser('~/.config/waybar/my.css')
+    source_file_path_jsonc = choose_file()
+    destination_file_path_jsonc = os.path.expanduser('~/.config/waybar/my.json')
+    shutil.copy(source_file_path_css, destination_file_path_css)
+    shutil.copy(source_file_path_jsonc, destination_file_path_jsonc)
